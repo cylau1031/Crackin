@@ -5,27 +5,19 @@
 //     "sample_setting": "This is how you use Store.js to remember values"
 // });
 
-
-
 chrome.contextMenus.create({
-  id: `Kraken`,
-  title: 'Kraken this',
+  id: `Crackin`,
+  title: 'Let\'s get Crackin\'!',
   contexts: ['selection'],
-});
+})
+
 chrome.runtime.onConnect.addListener(function(port) {
-    console.log(port)
-    console.assert(port.name === 'APIreq')
-    const getSelectedText = function() {
-      port.postMessage({type: 'getSelectedText'})
-    }()
-    chrome.contextMenus.onClicked.addListener(getSelectedText)
-    port.onMessage.addListener(function(msg) {
-      console.log(msg)
-      if (msg.type === 'selection') {
-        //use API here to get info, use dummy data for now:
-        let info = 'What in the world is all of this craziness?!?'
-        port.postMessage({type: 'display', info})
-      }
+  console.assert(port.name === 'APIreq')
+
+  chrome.contextMenus.onClicked.addListener(() => {
+    port.postMessage({type: 'displayInfo'})
+    //check if port exists because if can be disconnected
   })
 })
 
+const arr = []
