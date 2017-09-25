@@ -1,9 +1,9 @@
 {
-  "name": "CHANGE THIS : Extension boilerplate",
+  "name": "Crakin'",
   "version": "0.0.1",
   "manifest_version": 2,
-  "description": "This extension was created with the awesome extensionizr.com",
-  "homepage_url": "http://extensionizr.com",
+  "description": "Let me introduce Crackin', a chrome extension that helps you study as you read about web development topics by putting popular web developer sites and resources right at your door or browser in this case. Created by: Chuen Yan (Jamie) Lau",
+  "homepage_url": "https://github.com/cylau1031",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -19,7 +19,7 @@
   "options_page": "src/options_custom/index.html",
   "browser_action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "browser action demo",
+    "default_title": "Crakin'",
     "default_popup": "src/browser_action/browser_action.html"
   },
   "permissions": [
@@ -28,23 +28,17 @@
     "tabs",
     "activeTab",
     "http://*/",
-    "https://*/"
+    "https://*/",
+    "storage"
   ],
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
       ],
-      "css": [
-        "src/content_scripts/content_script.css"
-      ]
-    },
-    {
-      "matches": [
-        "<all_urls>"
-      ],
       "js": [
-        "js/jquery/jquery.min.js",
+        "js/jquery/jquery-3.2.1.min.js",
+        "src/content_scripts/google_api.js",
         "src/content_scripts/content_script.js"
       ]
     }
