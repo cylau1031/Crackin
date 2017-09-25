@@ -3,7 +3,7 @@
 const port = chrome.runtime.connect({name: 'APIreq'})
 let apiSource = 'MDN'
 let sources = ['MDN', 'Stack Overflow', 'Hacker News', 'Wikipedia']
-
+let selectedText = ''
 
 const getApiUrl = (txt) => {
 	switch (apiSource) {
@@ -39,6 +39,7 @@ const setupButton = () => {
 		return $button
 	}
 	const $exitButton = makeButton('exit', 'X', '26', () => {
+		selectedText = ''
 		$('#info-container').remove()
 		$('#exit-btn').remove()
 		$('#hide-btn').remove()
@@ -70,7 +71,7 @@ const setupButton = () => {
 const fullSetup = () => {
 	//info container
 	if (!document.getElementById('info-container')) {
-		let $container = $(`<div id="info-container"><div id="search-term"><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${window.getSelection().toString()}'</span></div></div>`)
+		let $container = $(`<div id="info-container"><div id="search-term"><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${selectedText}'</span></div></div>`)
 		$container.css({
 			position: 'fixed',
 			bottom: '2%',
@@ -91,7 +92,7 @@ const fullSetup = () => {
 		})
 		$('body').append($container)
 	} else {
-		$('#search-term').html(`<div><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${window.getSelection().toString()}'</span></div>`)
+		$('#search-term').html(`<div><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${selectedText}'</span></div>`)
 	}
 
 	//source-selector
@@ -176,6 +177,9 @@ const displayInfo = (info) => {
 	$('.parameter').css({
 		color: '#77d8ff'
 	})
+	$('.ext-colon').css({
+		color: 'white'
+	})
 }
 
 const shapeDataForDisplay = (data) => {
@@ -186,11 +190,11 @@ const shapeDataForDisplay = (data) => {
 			data.documents.forEach((dataPoint, ind) => {
 				let tags = dataPoint.slug.split('/').join(', ')
 				if (ind === 0) {
-					resultElements.push($(`<div>[{<div class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}</a></div>},</div>`))
+					resultElements.push($(`<div>[{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>tags<span class="ext-colon">:</span> ${tags}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.url}" target="_blank">${dataPoint.url}</a></div>},</div>`))
 				} else if (ind === data.documents.length - 1) {
-					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>}]</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>tags<span class="ext-colon">:</span> ${tags}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>}]</div>`))
 				} else {
-					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>},</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>tags<span class="ext-colon">:</span> ${tags}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>},</div>`))
 				}
 			})
 			break
@@ -198,33 +202,33 @@ const shapeDataForDisplay = (data) => {
 			data.items.forEach((dataPoint, ind) => {
 				let tags = dataPoint.tags.join(', ')
 				if (ind === 0) {
-					resultElements.push($(`<div>[{<div><span class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: </span><a href="${dataPoint.link}" target="_blank">${dataPoint.link}</a></div>}</div>`))
+					resultElements.push($(`<div>[{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>tags<span class="ext-colon">:</span> ${tags}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.link}" target="_blank">${dataPoint.link}</a></div>}</div>`))
 				} else if (ind === data.items.length - 1) {
-					resultElements.push($(`<div>{<div><span class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: </span><a href="${dataPoint.link}" target="_blank">${dataPoint.link}</a></div>}]</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>tags<span class="ext-colon">:</span> ${tags}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.link}" target="_blank">${dataPoint.link}</a></div>}]</div>`))
 				} else {
-					resultElements.push($(`<div>{<div><span class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: </span><a href="${dataPoint.link}" target="_blank">${dataPoint.link}}</a></div>}</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>tags<span class="ext-colon">:</span> ${tags}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.link}" target="_blank">${dataPoint.link}}</a></div>}</div>`))
 				}
 			})
 			break
 		case 'Hacker News':
 			data.hits.forEach((dataPoint, ind) => {
 				if (ind === 0) {
-					resultElements.push($(`<div>[{<div><span class="string-var">title: ${dataPoint.title}<br>url: </span><a href="${dataPoint.url}" target="_blank">${dataPoint.url}</a><div>},</div>`))
+					resultElements.push($(`<div>[{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.url}" target="_blank">${dataPoint.url}</a><div>},</div>`))
 				} else if (ind === data.hits.length - 1) {
-					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>}]</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>}]</div>`))
 				} else {
-					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>},</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint.title}<br>url<span class="ext-colon">:</span> <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>},</div>`))
 				}
 			})
 			break
 		case 'Wikipedia':
 			data[1].forEach((dataPoint, ind) => {
 				if (ind === 0) {
-					resultElements.push($(`<div>[{<div><span class="string-var">title: ${dataPoint}<br>description: ${data[2][ind]}<br>url: </span><a href="${data[3][ind]}" target="_blank">${data[3][ind]}</a><div>},</div>`))
+					resultElements.push($(`<div>[{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint}<br>description<span class="ext-colon">:</span> ${data[2][ind]}<br>url<span class="ext-colon">:</span> <a href="${data[3][ind]}" target="_blank">${data[3][ind]}</a><div>},</div>`))
 				} else if (ind === data[1].length - 1) {
-					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint}<br>description: ${data[2][ind]}<br>url: <a href="${data[3][ind]}" target="_blank">${data[3][ind]}}</a></div>}]</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint}<br>description<span class="ext-colon">:</span> ${data[2][ind]}<br>url<span class="ext-colon">:</span> <a href="${data[3][ind]}" target="_blank">${data[3][ind]}}</a></div>}]</div>`))
 				} else {
-					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint}<br>description: ${data[2][ind]}<br>url: <a href="${data[3][ind]}" target="_blank">${data[3][ind]}}</a></div>},</div>`))
+					resultElements.push($(`<div>{<div class="string-var">title<span class="ext-colon">:</span> ${dataPoint}<br>description<span class="ext-colon">:</span> ${data[2][ind]}<br>url<span class="ext-colon">:</span> <a href="${data[3][ind]}" target="_blank">${data[3][ind]}}</a></div>},</div>`))
 				}
 			})
 			break
@@ -235,8 +239,9 @@ const shapeDataForDisplay = (data) => {
 }
 
 const runApp = () => {
-	let selectedText = window.getSelection().toString().split(' ').join('%20')
-	let url = getApiUrl(selectedText)
+	selectedText = selectedText === '' ? window.getSelection().toString() : selectedText
+	let txt = selectedText.split(' ').join('%20')
+	let url = getApiUrl(txt)
 	$.ajax({
 		url,
 		type: 'GET',
@@ -258,42 +263,16 @@ const runApp = () => {
 }
 
 port.onMessage.addListener((msg) => {
-	if (msg.type === 'displayInfo' && window.getSelection().toString !== '') runApp()
-	$('#info-container').click(function(e){
-		console.log( 'clicked on div' );
-		e.stopPropagation(); // Prevent bubbling
-	});
-
-	$('#exit-btn').click(function(e){
-		console.log( 'clicked on div' );
-		e.stopPropagation(); // Prevent bubbling
-	});
-	$('#hide-btn').click(function(e){
-		console.log( 'clicked on div' );
-		e.stopPropagation(); // Prevent bubbling
-	});
-	$('#nextPage-btn').click(function(e){
-		console.log( 'clicked on div' );
-		e.stopPropagation(); // Prevent bubbling
-	});
-	$('#prevPage-btn').click(function(e){
-		console.log( 'clicked on div' );
-		e.stopPropagation(); // Prevent bubbling
-	});
-
+	if (msg.type === 'displayInfo') runApp()
 	$('body').click((evt) => {
-		if (!document.getElementById('#info-container').contains(evt.target) && window.getSelection().toString() === ''){
-			console.log('click inside')
-		} else {
-			console.log('click outside')
+		if ($('#info-container').length && !$.contains(document.getElementById('info-container'), evt.target) && window.getSelection().toString() === '') {
+			selectedText = ''
+			$('#info-container').remove()
+			$('#exit-btn').remove()
+			$('#hide-btn').remove()
+			$('#nextPage-btn').remove()
+			$('#prevPage-btn').remove()
 		}
-		// window.getSelection().toString() === '') {
-		// 	$('#info-container').remove()
-		// 	$('#exit-btn').remove()
-		// 	$('#hide-btn').remove()
-		// 	$('#nextPage-btn').remove()
-		// 	$('#prevPage-btn').remove()
-		// }
 	})
 })
 
