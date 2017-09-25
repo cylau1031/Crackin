@@ -4,8 +4,8 @@ const port = chrome.runtime.connect({name: 'APIreq'})
 let apiSource = 'MDN'
 let sources = ['MDN', 'Stack Overflow', 'Hacker News', 'Wikipedia']
 
+
 const getApiUrl = (txt) => {
-	console.log('in get url')
 	switch (apiSource) {
 		case 'MDN':
 			return `https://developer.mozilla.org/en-US/search.json?locale=en-US&q=${txt}`
@@ -31,8 +31,9 @@ const setupButton = () => {
 			height: '40px',
 			width: '40px',
 			'border-radius': '50%',
-			z: '100',
-			color: 'white'
+			'z-index': '500',
+			color: 'white',
+			'font-size': '12px'
 		})
 		$button.click(clickHandler)
 		return $button
@@ -67,36 +68,35 @@ const setupButton = () => {
 }
 
 const fullSetup = () => {
-	console.log('in setup')
 	//info container
 	if (!document.getElementById('info-container')) {
-		let $container = $(`<div id="info-container"><p id="search-term"><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${window.getSelection().toString()}'</span></p></div>`)
+		let $container = $(`<div id="info-container"><div id="search-term"><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${window.getSelection().toString()}'</span></div></div>`)
 		$container.css({
 			position: 'fixed',
 			bottom: '2%',
 			right: '-20%',
 			width: '400px',
-			height: '375px',
+			height: '325px',
 			opacity: '0.6',
-			padding: '10px 17px',
+			padding: '17px',
 			'background-color': '#2b303b',
 			'word-wrap': 'break-word',
-			z: '99',
-			'line-height': '100%',
+			'z-index': '600',
+	  	'line-height': '20px',
 			overflow: 'hidden',
 			'border-radius': '3%',
 			'font-family': 'Inconsolata, Monaco, Consolas, "Courier New", Courier',
 			color: 'white',
+			'font-size': '12px'
 		})
 		$('body').append($container)
 	} else {
-		//console.log('search term', $('#search-term').html)
-		$('#search-term').html(`<span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${window.getSelection().toString()}'</span>`)
+		$('#search-term').html(`<div><span class='let-dec'>let</span> <span class="var-dec">searchTerm</span> = <span class="string-var">'${window.getSelection().toString()}'</span></div>`)
 	}
 
 	//source-selector
 	if(!document.getElementById('source-selector')) {
-		let $sourceSelector = $(`<p><span class='let-dec'>let</span> <span class="var-dec">source</span> = <select id="source-selector"><select></p>`)
+		let $sourceSelector = $(`<div><span class='let-dec'>let</span> <span class="var-dec">source</span> = <select id="source-selector"><select><div>`)
 		$('#info-container').append($sourceSelector)
 		$('#source-selector').css({
 			background: 'transparent',
@@ -107,7 +107,7 @@ const fullSetup = () => {
 			height: '26px',
 			padding: '5px',
 			width: '175px',
-			'line-height': '105%',
+	//		'line-height': '105%',
 			'background-color': '#2b303b',
 			color: '#d68e13',
 			'font-family': 'Inconsolata, Monaco, Consolas, "Courier New", Courier'
@@ -121,7 +121,8 @@ const fullSetup = () => {
 			runApp()
 		})
 		$('#info-container').append('<hr>')
-		$('#info-container').append('<p><span class="function-call">crackin</span>(<span class="parameter">searchTerm</span>)</p><p class="result">> Array</p>')
+		$('#info-container').append('<div><br><span class="function-call">crackin</span>(<span class="parameter">searchTerm</span>)<br>> Array</div>')
+		// $('#info-container').append('<br>')
 	}
 
 	//infobox
@@ -129,13 +130,12 @@ const fullSetup = () => {
 		let $infoBox = $('<div id="info-box"></div>')
 		$infoBox.css({
 			margin: 'auto',
-			//padding: '5px',
 			'background-color': '#2b303b',
 			width: '385px',
-			height: '210px',
-			z: '100',
+			height: '200px',
+			'z-index': '500',
 			'word-wrap': 'break-word',
-			'overflow': 'auto'
+			'overflow': 'auto',
 		})
 		$('#info-container').append($infoBox)
 		if (!document.getElementById('exit-btn')) {
@@ -145,6 +145,21 @@ const fullSetup = () => {
 		$('#info-box').empty()
 	}
 
+
+}
+
+
+const displayInfo = (info) => {
+	//each line of info
+	if (!document.getElementById('info-container')) {
+		fullSetup()
+		info.forEach(el => $('#info-box').append(el))
+		$('#info-container').animate({right: '6%', opacity: '1'})
+	} else {
+		fullSetup()
+		let $infoBox = $('#info-box')
+		info.forEach(el => $infoBox.append(el))
+	}
 	$('.let-dec').css({
 		color: '#1453ba'
 	})
@@ -152,7 +167,8 @@ const fullSetup = () => {
 		color: '#77d8ff'
 	})
 	$('.string-var').css({
-		color: '#d68e13'
+		color: '#d68e13',
+		'padding': '0px 20px'
 	})
 	$('.function-call').css({
 		color: '#f8f99d'
@@ -160,30 +176,6 @@ const fullSetup = () => {
 	$('.parameter').css({
 		color: '#77d8ff'
 	})
-	$('ext-description').css({
-		color: '#d68e13'
-	})
-}
-
-
-const displayInfo = (info) => {
-	console.log('in display message')
-	//each line of info
-	if(!document.getElementById('info-container')) {
-		fullSetup()
-		console.log('in display message new container')
-		$('#info-box').append('<p>[</p>')
-		info.forEach(el => $('#info-box').append(el))
-		$('#info-container').animate({right: '6%', opacity: '1'})
-		$('#info-box').append('<p>]</p>')
-	} else {
-		fullSetup()
-		console.log('in display message old container')
-		let $infoBox = $('#info-box')
-		$('#info-box').append('<p>[</p>')
-		info.forEach(el => $infoBox.append(el))
-		$('#info-box').append('<p>]</p>')
-	}
 }
 
 const shapeDataForDisplay = (data) => {
@@ -191,25 +183,49 @@ const shapeDataForDisplay = (data) => {
 	let resultElements = []
 	switch (apiSource) {
 		case 'MDN':
-			data.documents.forEach(dataPoint => {
+			data.documents.forEach((dataPoint, ind) => {
 				let tags = dataPoint.slug.split('/').join(', ')
-				resultElements.push($(`<div>{<p class="ext-description">${dataPoint.title}</p><p class="ext-decription">tags: ${tags}</p><a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></p>},</div>`))
+				if (ind === 0) {
+					resultElements.push($(`<div>[{<div class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}</a></div>},</div>`))
+				} else if (ind === data.documents.length - 1) {
+					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>}]</div>`))
+				} else {
+					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>},</div>`))
+				}
 			})
 			break
 		case 'Stack Overflow':
-			data.items.forEach(dataPoint => {
+			data.items.forEach((dataPoint, ind) => {
 				let tags = dataPoint.tags.join(', ')
-				resultElements.push($(`<div><p class="ext-description">${dataPoint.title}</p><p class="ext-decription">tags: ${tags}</p><a href="${dataPoint.link}" target="_blank">${dataPoint.link}}</a></p></div>`))
+				if (ind === 0) {
+					resultElements.push($(`<div>[{<div><span class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: </span><a href="${dataPoint.link}" target="_blank">${dataPoint.link}</a></div>}</div>`))
+				} else if (ind === data.items.length - 1) {
+					resultElements.push($(`<div>{<div><span class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: </span><a href="${dataPoint.link}" target="_blank">${dataPoint.link}</a></div>}]</div>`))
+				} else {
+					resultElements.push($(`<div>{<div><span class="string-var">title: ${dataPoint.title}<br>tags: ${tags}<br>url: </span><a href="${dataPoint.link}" target="_blank">${dataPoint.link}}</a></div>}</div>`))
+				}
 			})
 			break
 		case 'Hacker News':
-			data.hits.forEach(dataPoint => {
-				resultElements.push($(`<div><p class="ext-description">${dataPoint.title}</p><a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></p></div>`))
+			data.hits.forEach((dataPoint, ind) => {
+				if (ind === 0) {
+					resultElements.push($(`<div>[{<div><span class="string-var">title: ${dataPoint.title}<br>url: </span><a href="${dataPoint.url}" target="_blank">${dataPoint.url}</a><div>},</div>`))
+				} else if (ind === data.hits.length - 1) {
+					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>}]</div>`))
+				} else {
+					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint.title}<br>url: <a href="${dataPoint.url}" target="_blank">${dataPoint.url}}</a></div>},</div>`))
+				}
 			})
 			break
 		case 'Wikipedia':
 			data[1].forEach((dataPoint, ind) => {
-				resultElements.push($(`<div><p class="ext-description">${dataPoint}</p><p class="ext-decription">${data[2][ind]}</p><a href="${data[3][ind]}" target="_blank">${data[3][ind]}</a></p></div>`))
+				if (ind === 0) {
+					resultElements.push($(`<div>[{<div><span class="string-var">title: ${dataPoint}<br>description: ${data[2][ind]}<br>url: </span><a href="${data[3][ind]}" target="_blank">${data[3][ind]}</a><div>},</div>`))
+				} else if (ind === data[1].length - 1) {
+					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint}<br>description: ${data[2][ind]}<br>url: <a href="${data[3][ind]}" target="_blank">${data[3][ind]}}</a></div>}]</div>`))
+				} else {
+					resultElements.push($(`<div>{<div class="string-var">title: ${dataPoint}<br>description: ${data[2][ind]}<br>url: <a href="${data[3][ind]}" target="_blank">${data[3][ind]}}</a></div>},</div>`))
+				}
 			})
 			break
 		default:
@@ -242,42 +258,42 @@ const runApp = () => {
 }
 
 port.onMessage.addListener((msg) => {
-	if (msg.type === 'displayInfo') {
-		runApp()
-	}
+	if (msg.type === 'displayInfo' && window.getSelection().toString !== '') runApp()
+	$('#info-container').click(function(e){
+		console.log( 'clicked on div' );
+		e.stopPropagation(); // Prevent bubbling
+	});
+
+	$('#exit-btn').click(function(e){
+		console.log( 'clicked on div' );
+		e.stopPropagation(); // Prevent bubbling
+	});
+	$('#hide-btn').click(function(e){
+		console.log( 'clicked on div' );
+		e.stopPropagation(); // Prevent bubbling
+	});
+	$('#nextPage-btn').click(function(e){
+		console.log( 'clicked on div' );
+		e.stopPropagation(); // Prevent bubbling
+	});
+	$('#prevPage-btn').click(function(e){
+		console.log( 'clicked on div' );
+		e.stopPropagation(); // Prevent bubbling
+	});
+
+	$('body').click((evt) => {
+		if (!document.getElementById('#info-container').contains(evt.target) && window.getSelection().toString() === ''){
+			console.log('click inside')
+		} else {
+			console.log('click outside')
+		}
+		// window.getSelection().toString() === '') {
+		// 	$('#info-container').remove()
+		// 	$('#exit-btn').remove()
+		// 	$('#hide-btn').remove()
+		// 	$('#nextPage-btn').remove()
+		// 	$('#prevPage-btn').remove()
+		// }
+	})
 })
 
-
-
-
-//Youtube - doesnt work
-// port.onMessage.addListener(function(msg) {
-// 	function start() {
-// 		console.log('hello start')
-// 		// 2. Initialize the JavaScript client library.
-// 		window.gapi.client.init({
-// 			'apiKey': 'AIzaSyCUq_crJCrzz0oytP6gatLOVTsC7iSoesM',
-// 			// Your API key will be automatically added to the Discovery Document URLs.
-// 			'discoveryDocs': ['https://people.googleapis.com/$discovery/rest'],
-// 			// clientId and scope are optional if auth is not required
-// 		}).then(function() {
-// 			console.log('I am in!')
-// 			// 3. Initialize and make the API request.
-// 			return gapi.client.youtube.search.list({
-// 				q: 'React.js',
-// 				type: '',
-// 				part: 'snippet',
-// 				maxResults: '10'
-// 			});
-// 		}).then(function(response) {
-// 			console.log('YOUTUBE', response.result);
-// 		}, function(reason) {
-// 			console.log('Error: ' + reason.result.error.message);
-// 		});
-// 	}
-// 	if (msg.type === 'getSelectedText'){
-// 		let selectedText = window.getSelection().toString().split(' ').join('%20')
-// 		// 1. Load the JavaScript client library.
-// 		window.gapi.load('client', start);
-// 	}
-// });

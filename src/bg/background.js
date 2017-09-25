@@ -5,6 +5,7 @@
 //     "sample_setting": "This is how you use Store.js to remember values"
 // });
 
+
 chrome.contextMenus.create({
   id: `Crackin`,
   title: 'Let\'s get Crackin\'!',
@@ -20,4 +21,3 @@ chrome.runtime.onConnect.addListener(function(port) {
   })
 })
 
-const arr = []
