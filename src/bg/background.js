@@ -18,6 +18,8 @@ chrome.runtime.onConnect.addListener(function(port) {
   chrome.contextMenus.onClicked.addListener(() => {
     port.postMessage({type: 'displayInfo'})
     //check if port exists because if can be disconnected
+    // chrome.browserAction.setBadgeBackgroundColor({color: '#FF0000'})
+    // chrome.browserAction.setBadgeText({text: '...'});
   })
 })
 

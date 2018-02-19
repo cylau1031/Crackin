@@ -1,5 +1,5 @@
 {
-  "name": "Crakin'",
+  "name": "Crackin'",
   "version": "0.0.1",
   "manifest_version": 2,
   "description": "Let me introduce Crackin', a chrome extension that helps you study as you read about web development topics by putting popular web developer sites and resources right at your door or browser in this case. Created by: Chuen Yan (Jamie) Lau",
@@ -36,11 +36,17 @@
       "matches": [
         "<all_urls>"
       ],
+      "css": [
+        "src/content_scripts/content_script.css"
+      ],
       "js": [
         "js/jquery/jquery-3.2.1.min.js",
-        "src/content_scripts/google_api.js",
+        "src/content_scripts/utils.js",
         "src/content_scripts/content_script.js"
       ]
     }
+  ],
+  "web_accessible_resources": [
+    "src/content_scripts/content_script.css"
   ]
 }
